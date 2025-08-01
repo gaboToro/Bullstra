@@ -1,0 +1,42 @@
+@startuml ComponentDiagram-OrderCore
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' Define the system name
+title Component Diagram - OrderCore Microservice (Bullstra™)
+
+' Define the main container (OrderCore microservice)
+Container_Boundary(OrderCore_Boundary, "OrderCore Microservice") {
+
+    ' Internal components of the microservice
+    Component(rest_controller, "OrderController", "REST Controller", "Handles incoming HTTP requests from the API Gateway.")
+    Component(order_service, "OrderService", "Business Service", "Contains the main business logic for managing orders.")
+    Component(order_repository, "OrderRepository", "JPA Repository", "Manages persistence of order data in the relational database.")
+    Component(kafka_producer, "EventProducer", "Kafka Client", "Sends notification events to other microservices.")
+    Component(inventory_client, "InventoryClient", "HTTP Client", "Makes synchronous calls to the inventory service.")
+}
+
+' External dependencies (other services and databases)
+SystemDb(relational_db, "Relational Database", "PostgreSQL", "Stores data related to orders, order items, and invoices.")
+SystemQueue(message_broker, "Message Broker", "Apache Kafka", "Event bus for asynchronous communication between microservices.")
+System(inventory_ms, "InventoryCore Microservice", "Java with Spring Boot", "Manages product stock.")
+System(billing_ms, "Billing Microservice", "Java with Spring Boot", "Generates and manages order invoices.")
+System(api_gateway, "API Gateway", "Spring Cloud Gateway", "Entry point for external HTTP requests.")
+
+' Relationships
+' External request flow
+Rel(api_gateway, rest_controller, "Calls the order API", "HTTPS/JSON")
+
+' Internal microservice flow
+Rel(rest_controller, order_service, "Uses service for business logic.")
+Rel(order_service, order_repository, "Uses repository to save/retrieve data.")
+Rel(order_repository, relational_db, "Reads/writes order data", "JDBC")
+
+' Communication with other microservices (Saga Pattern)
+Rel(order_service, inventory_client, "Reserves product stock", "Synchronous HTTP")
+Rel(inventory_client, inventory_ms, "Reserves stock", "HTTPS/JSON")
+
+Rel(order_service, kafka_producer, "Publishes 'OrderCreated' event", "Asynchronous")
+Rel(kafka_producer, message_broker, "Sends 'OrderCreated' event")
+Rel(message_broker, billing_ms, "Billing service consumes 'OrderCreated' event")
+
+@enduml
