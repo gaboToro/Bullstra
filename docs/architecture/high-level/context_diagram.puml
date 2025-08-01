@@ -1,28 +1,31 @@
-@startuml SistemaGestionLogisticaContext
+@startuml LogisticsManagementSystemContext
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-' Personas
-Person(cliente, "Cliente", "Crea, consulta y sigue sus pedidos, consulta productos.")
-Person(administrador, "Administrador", "Gestiona inventario, monitorea operaciones, accede a reportes.")
-Person(personal_logistico, "Personal Logístico", "Conductores y personal de almacén que gestionan entregas y stock.")
+' Define the name of the system
+title Logistics and Supply Chain Management System (Bullstra™)
 
-' Sistemas Externos
-System_Ext(transportistas, "Servicios de Transportistas Externos", "APIs de empresas de transporte (ej. DHL, FedEx).")
-System_Ext(pasarelas_pago, "Pasarela de Pago", "Sistema para procesar transacciones financieras.")
-System_Ext(sistemas_empresariales, "Sistemas Empresariales Existentes", "Sistemas de compras o ERPs para gestión de proveedores.")
-System_Ext(servicios_notificaciones, "Servicios de Notificaciones Externos", "Plataformas de envío de Email y SMS (ej. SendGrid, Twilio).")
+' People
+Person(customer, "Customer", "Creates, views, and tracks orders; browses products.")
+Person(admin, "Administrator", "Manages inventory, monitors operations, accesses reports.")
+Person(logistics_staff, "Logistics Staff", "Drivers and warehouse personnel handling deliveries and stock updates.")
 
-' Sistema bajo desarrollo
-System(logistica_scm, "Sistema de Gestión de Logística y Cadena de Suministro", "Optimiza la gestión de productos, inventario, pedidos y envíos a lo largo de la cadena de suministro, usando una arquitectura de microservicios.")
+' External Systems
+System_Ext(carrier_services, "External Carrier Services", "APIs from shipping companies (e.g., DHL, FedEx) used for delivery management.")
+System_Ext(payment_gateway, "Payment Gateway", "System that processes financial transactions securely.")
+System_Ext(enterprise_systems, "Existing Enterprise Systems", "Procurement or ERP systems for managing suppliers and purchase orders.")
+System_Ext(notification_services, "External Notification Services", "Platforms for sending email and SMS (e.g., SendGrid, Twilio).")
 
-' Relaciones
-Rel(cliente, logistica_scm, "Crea y gestiona pedidos, consulta productos", "HTTPS / API Web")
-Rel(administrador, logistica_scm, "Gestiona y monitorea operaciones", "HTTPS / API Web")
-Rel(personal_logistico, logistica_scm, "Actualiza stock, confirma entregas, seguimiento de ruta", "HTTPS / API Móvil")
+' System under development
+System(logistics_scm, "Logistics and Supply Chain Management System (Bullstra™)", "Optimizes the management of products, inventory, orders, and deliveries across the supply chain using a robust, distributed microservices architecture.")
 
-Rel(logistica_scm, transportistas, "Gestiona y envía datos de envío", "API REST / Webhook")
-Rel(logistica_scm, pasarelas_pago, "Procesa pagos de pedidos", "API REST / Webhook")
-Rel(logistica_scm, sistemas_empresariales, "Gestiona proveedores y órdenes de compra", "API REST / SOAP")
-Rel(logistica_scm, servicios_notificaciones, "Envía notificaciones por Email y SMS", "API REST")
+' Relationships
+Rel(customer, logistics_scm, "Creates and manages orders, browses products", "HTTPS / Web API")
+Rel(admin, logistics_scm, "Manages and monitors operations", "HTTPS / Web API")
+Rel(logistics_staff, logistics_scm, "Updates inventory, confirms deliveries, tracks routes", "HTTPS / Mobile API")
+
+Rel_Back(logistics_scm, carrier_services, "Sends shipping and tracking data", "REST API / Webhook")
+Rel_Back(logistics_scm, payment_gateway, "Processes order payments", "REST API / Webhook")
+Rel_Back(logistics_scm, enterprise_systems, "Manages suppliers and purchase orders", "REST API / SOAP")
+Rel_Back(logistics_scm, notification_services, "Sends notifications via Email and SMS", "REST API")
 
 @enduml
