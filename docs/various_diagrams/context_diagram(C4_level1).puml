@@ -1,0 +1,31 @@
+@startuml LogisticsManagementSystemContext
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+' Define the name of the system
+title Logistics and Supply Chain Management System (Bullstra™)
+
+' People
+Person(customer, "Customer", "Creates, views, and tracks orders; browses products.")
+Person(admin, "Administrator", "Manages inventory, monitors operations, accesses reports.")
+Person(logistics_staff, "Logistics Staff", "Drivers and warehouse personnel handling deliveries and stock updates.")
+
+' External Systems
+System_Ext(carrier_services, "External Carrier Services", "APIs from shipping companies (e.g., DHL, FedEx) used for delivery management.")
+System_Ext(payment_gateway, "Payment Gateway", "System that processes financial transactions securely.")
+System_Ext(enterprise_systems, "Existing Enterprise Systems", "Procurement or ERP systems for managing suppliers and purchase orders.")
+System_Ext(notification_services, "External Notification Services", "Platforms for sending email and SMS (e.g., SendGrid, Twilio).")
+
+' System under development
+System(logistics_scm, "Logistics and Supply Chain Management System (Bullstra™)", "Optimizes the management of products, inventory, orders, and deliveries across the supply chain using a robust, distributed microservices architecture.")
+
+' Relationships
+Rel(customer, logistics_scm, "Creates and manages orders, browses products", "HTTPS / Web API")
+Rel(admin, logistics_scm, "Manages and monitors operations", "HTTPS / Web API")
+Rel(logistics_staff, logistics_scm, "Updates inventory, confirms deliveries, tracks routes", "HTTPS / Mobile API")
+
+Rel_Back(logistics_scm, carrier_services, "Sends shipping and tracking data", "REST API / Webhook")
+Rel_Back(logistics_scm, payment_gateway, "Processes order payments", "REST API / Webhook")
+Rel_Back(logistics_scm, enterprise_systems, "Manages suppliers and purchase orders", "REST API / SOAP")
+Rel_Back(logistics_scm, notification_services, "Sends notifications via Email and SMS", "REST API")
+
+@enduml

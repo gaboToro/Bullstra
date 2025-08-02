@@ -1,0 +1,89 @@
+@startuml LogisticsManagementContainer
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Define the system name
+title Container Diagram - Logistics Management System (Bullstra™)
+
+' Persons
+Person(client, "Client", "Creates, views, and tracks orders, views products.")
+Person(admin, "Administrator", "Manages inventory, monitors operations, accesses reports.")
+Person(logistics_staff, "Logistics Staff", "Drivers and warehouse personnel who manage deliveries and stock.")
+
+' External Systems
+System_Ext(carrier_services, "External Carrier Services", "APIs from transport companies (e.g., DHL, FedEx) for shipping management.")
+System_Ext(payment_gateway, "Payment Gateway", "System for processing financial transactions.")
+System_Ext(notification_services, "External Notification Services", "Email and SMS platforms (e.g., SendGrid, Twilio).")
+
+' System Container
+Container_Boundary(bullstra_system, "Logistics and Supply Chain Management System (Bullstra™)") {
+
+    ' Frontend Applications
+    Container(web_app, "Web Application", "React/Angular/Vue.js", "Main portal for clients and administrators.")
+    Container(mobile_app, "Mobile Application", "React Native/Flutter", "For logistics staff: scanning, delivery confirmation, route tracking.")
+    Container(desktop_app, "Desktop Application", "Electron", "Advanced control panel for real-time vehicle monitoring and incident management.")
+    
+    ' API Gateway
+    Container(api_gateway, "API Gateway", "Spring Cloud Gateway (Java), Ocelot (.NET), Kong", "Unified entry point for all APIs.")
+    
+    ' Microservices Containers (grouped by domains)
+    Container_Boundary(core_microservices, "Backend Microservices") {
+        
+        ' Message Broker for Event-Driven Architecture
+        SystemQueue(message_broker, "Message Broker", "Apache Kafka/RabbitMQ")
+
+        Container(inventory_ms, "Inventory Domain", "Java (Spring Boot), Go, Redis, MongoDB", "Manages products, stock, prices, and warehouse locations.")
+        Container(orders_ms, "Orders Domain", "Java (Spring Boot)", "Creation, processing, invoicing, and management of order items.")
+        Container(shipping_ms, "Shipping and Logistics Domain", "Python (FastAPI), Go, Node.js", "Manages the shipping lifecycle, route optimization, tracking, and vehicles.")
+        Container(suppliers_ms, "Suppliers and Purchases Domain", "C# (.NET Core)", "Manages suppliers, purchase orders, and goods reception.")
+        Container(notifications_ms, "Notifications Domain", "Python (FastAPI), Node.js", "Sends emails, SMS, and alerts.")
+        Container(analytics_ms, "Analytics and Reports Domain", "Python (FastAPI)", "Data collection, report generation, and predictive analysis.")
+        Container(users_ms, "Clients and Users Domain", "Java (Spring Boot)", "Registration, authentication, profile management (clients, admins, staff).")
+
+        ' Databases (as containers within the system)
+        ContainerDb(relational_db, "Relational Databases", "PostgreSQL/MySQL (AWS RDS)", "Transactional data for orders, inventory, users, vehicles, staff.")
+        ContainerDb(document_db, "Document Database", "MongoDB (AWS DocumentDB)", "For product catalog and configuration data.")
+        ContainerDb(cache_db, "Data Cache", "Redis (AWS ElastiCache)", "For caching, user sessions, and quick stock counters.")
+        ContainerDb(search_engine, "Search Engine", "Elasticsearch (AWS OpenSearch)", "For full-text search of products and shipments.")
+        ContainerDb(time_series_db, "Time-Series Database", "InfluxDB", "For real-time vehicle location data.")
+
+        ' Internal relationships between microservices and databases
+        Rel(inventory_ms, relational_db, "Reads from and writes to", "SQL")
+        Rel(inventory_ms, document_db, "Reads from and writes to", "JSON Documents")
+        Rel(inventory_ms, cache_db, "Reads from and writes to", "Key-Value")
+        Rel(inventory_ms, search_engine, "Reads from and writes to", "JSON")
+
+        Rel(orders_ms, relational_db, "Reads from and writes to", "SQL")
+        Rel(suppliers_ms, relational_db, "Reads from and writes to", "SQL")
+
+        Rel(shipping_ms, relational_db, "Reads from and writes to", "SQL")
+        Rel(shipping_ms, time_series_db, "Writes time-series data", "InfluxDB Protocol")
+
+        Rel(users_ms, relational_db, "Reads from and writes to", "SQL")
+        Rel(notifications_ms, notification_services, "Sends emails/SMS", "REST API")
+
+        Rel_R(inventory_ms, message_broker, "Produces 'StockUpdated' events", "Asynchronous")
+        Rel_R(orders_ms, message_broker, "\n\n\n\n\n\n\n\n\n\nProduces 'OrderCreated' events", "Asynchronous") 
+        Rel_R(shipping_ms, message_broker, "Produces 'VehicleLocationUpdated' events", "Asynchronous")
+
+        Rel_L(orders_ms, message_broker, "Consumes 'StockReserved' events", "Asynchronous")
+        Rel_L(inventory_ms, message_broker, "\n\n\n\n\n\n\n\n\n\nConsumes 'StockReserved' events", "Asynchronous") 
+        Rel_L(shipping_ms, message_broker, "\n\n\n\n\n\n\n\n\n\nConsumes'PendingShipment' events", "Asynchronous")
+    }
+    
+    ' Relationships between frontends, API Gateway, and microservices
+    Rel(web_app, api_gateway, "API Calls", "HTTPS/JSON")
+    Rel(mobile_app, api_gateway, "API Calls", "HTTPS/JSON")
+    Rel(desktop_app, api_gateway, "API Calls", "HTTPS/JSON")
+    Rel(api_gateway, core_microservices, "Routes requests to", "HTTPS/gRPC")
+}
+
+' External relationships with the system
+Rel(client, web_app, "Creates and manages orders, views products", "HTTPS")
+Rel(admin, web_app, "Manages and monitors operations", "HTTPS")
+Rel(logistics_staff, mobile_app, "Updates stock, confirms deliveries, tracks routes", "HTTPS")
+Rel(logistics_staff, desktop_app, "Monitors vehicles on a map", "WebSocket")
+Rel(bullstra_system, carrier_services, "Manages and sends shipping data", "REST API / Webhook")
+Rel(bullstra_system, payment_gateway, "Processes order payments", "REST API / Webhook")
+Rel(bullstra_system, notification_services, "Sends email and SMS notifications", "REST API")
+
+@enduml
