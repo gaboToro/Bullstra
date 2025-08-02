@@ -1,0 +1,55 @@
+@startuml SequenceDiagram-OrderCreation
+title New Order Creation Flow
+
+' Define the participants
+actor "Customer" as C
+participant "Web Application" as WA
+box "Bullstra™ Infrastructure" #LightBlue
+    participant "API Gateway" as AG
+    participant "OrderCore Microservice" as OMS
+    participant "InventoryCore Microservice" as IMS
+    database "PostgreSQL DB" as DB
+    queue "Message Broker (Kafka)" as KMQ
+end box
+participant "Billing Microservice" as BMS
+
+' Customer interacts with the web application
+C -> WA: 1. Initiates new order creation (HTTPS)
+
+activate WA
+' Web app sends the request to the API Gateway
+WA -> AG: 2. POST /api/orders\n(order data)
+activate AG
+' API Gateway routes the request to OrderCore
+AG -> OMS: 3. Routes request to OrderCore service
+deactivate AG
+activate OMS
+
+    ' OrderCore calls InventoryCore synchronously
+    OMS -> IMS: 4. POST /api/inventory/reserveStock\n(stock reservation request)
+    activate IMS
+    IMS --> OMS: 5. HTTP 200 OK\n(stock reserved)
+    deactivate IMS
+
+    ' OrderCore saves the order in the database
+    OMS -> DB: 6. Saves order data\n(INSERT INTO orders...)
+    activate DB
+    DB --> OMS: 7. Save confirmation
+    deactivate DB
+
+    ' OrderCore publishes an event asynchronously
+    OMS -> KMQ: 8. Publishes "OrderCreated" event\n(asynchronous)
+    activate KMQ
+
+    ' Billing microservice consumes the event
+    KMQ -> BMS: 9. Billing service consumes\n"OrderCreated" event
+    deactivate KMQ
+    
+    ' Return response to the client
+    OMS --> WA: 10. HTTP 201 Created\n(order confirmed)
+    deactivate OMS
+    
+WA -> C: 11. Displays confirmation message\n(Order #1234 created)
+deactivate WA
+
+@enduml
