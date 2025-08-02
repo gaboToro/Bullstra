@@ -1,0 +1,31 @@
+graph TD
+
+subgraph Inventory_Management_Domain
+    InventoryService[InventoryCore]
+end
+
+subgraph External_Actors
+    LogisticsStaff[Logistics_Staff]
+    Supplier[Supplier]
+    Customer[Customer]
+end
+
+subgraph Data_Stores
+    InventoryDB[Inventory_Database]
+    ProductsDB[Products_Database]
+end
+
+subgraph Event_Bus
+    MessageBroker[Apache_Kafka_RabbitMQ]
+end
+
+LogisticsStaff -->|1 Stock Update| InventoryService
+InventoryService -->|2 Stores in| InventoryDB
+InventoryService -->|3 Sends Catalog| Customer
+Supplier -->|4 Product Data| InventoryService
+InventoryService -->|5 Requests Restocking| Supplier
+
+P1_OrderManagement[Order_Process_in_DFD_0] -->|6 Sends StockReservationRequest Event| MessageBroker
+MessageBroker -->|7 StockReservationRequest| InventoryService
+InventoryService -->|8 Reserves Stock| InventoryDB
+InventoryService -->|9 Sends StockReserved Event| MessageBroker
