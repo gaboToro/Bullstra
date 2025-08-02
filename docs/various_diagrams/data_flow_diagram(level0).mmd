@@ -1,0 +1,65 @@
+graph TD
+    %% Define external actors/entities
+    subgraph External Actors
+        Customer[Customer]
+        Admin[Administrator]
+        LogisticsStaff[Logistics Staff]
+        Supplier[Supplier]
+        TransportServices[External Transport Services]
+    end
+
+    %% Define the main system process
+    subgraph Logistics Management System
+        subgraph System Processes
+            P1(Order Management)
+            P2(Inventory Management)
+            P3(Logistics and Shipping Management)
+            P4(User and Report Management)
+        end
+    end
+
+    %% Define data stores
+    subgraph Data Stores
+        D1[Inventory]
+        D2[Orders]
+        D3[Shipments and Routes]
+        D4[Users]
+        D5[Suppliers and Purchases]
+    end
+
+    %% Define data flows
+    %% Data flows for Customer
+    Customer -- Order Data --> P1
+    P1 -- Order Status & Invoice --> Customer
+    Customer -- Credentials --> P4
+    P4 -- Authentication --> Customer
+    Customer -- Product Request --> P2
+    P2 -- Product Catalog --> Customer
+
+    %% Data flows for Administrator
+    Admin -- Management Data --> P2
+    Admin -- Report Request --> P4
+    P4 -- Dashboards and Reports --> Admin
+
+    %% Data flows for Logistics Staff
+    LogisticsStaff -- Inventory Update --> P2
+    LogisticsStaff -- Delivery Confirmation --> P3
+    LogisticsStaff -- Vehicle Location --> P3
+    P3 -- Route Assignment & Delivery Details --> LogisticsStaff
+
+    %% Data flows for Supplier
+    Supplier -- Supplier Data --> P2
+    P2 -- Purchase Orders --> Supplier
+
+    %% Data flows for Transport Services
+    TransportServices -- Tracking Update --> P3
+    P3 -- Shipping Data --> TransportServices
+
+    %% Connections between processes and data stores
+    P1 <--> D2
+    P2 <--> D1
+    P3 <--> D3
+    P4 <--> D4
+    P2 <--> D5
+    P1 <--> D1
+    P3 <--> D2
