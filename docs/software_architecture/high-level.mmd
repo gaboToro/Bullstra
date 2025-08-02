@@ -1,0 +1,55 @@
+graph TD
+  subgraph FrontendCustomersAdministrators
+    WebPortal[Web Portal]
+    DesktopApp[Desktop App]
+  end
+
+  subgraph FrontendLogisticsStaff
+    MobileApp[Mobile App for Drivers and Warehouse]
+  end
+
+  subgraph BackendBullstraFusion
+    API_Gateway[API Gateway]
+
+    subgraph BusinessDomains
+      Inventory[Inventory Domain]
+      Orders[Orders Domain]
+      Logistics[Shipping and Logistics Domain]
+      Others[Other Domains]
+    end
+
+    subgraph SupportServices
+      EventBroker[Event Broker Kafka or RabbitMQ]
+      DBSupport[Support Databases]
+    end
+  end
+
+  subgraph ExternalSystems
+    Carriers[Carrier APIs]
+    PaymentGateways[Payment Gateways]
+  end
+
+  WebPortal --> API_Gateway
+  DesktopApp --> API_Gateway
+  MobileApp --> API_Gateway
+
+  API_Gateway --> Inventory
+  API_Gateway --> Orders
+  API_Gateway --> Logistics
+  API_Gateway --> Others
+
+  Inventory -->|Event| EventBroker
+  Orders -->|Event| EventBroker
+  Logistics -->|Event| EventBroker
+
+  EventBroker -->|Subscribe| Inventory
+  EventBroker -->|Subscribe| Orders
+  EventBroker -->|Subscribe| Logistics
+
+  API_Gateway -->|WebHook| Carriers
+  API_Gateway -->|WebHook| PaymentGateways
+
+  Inventory --> DBSupport
+  Orders --> DBSupport
+  Logistics --> DBSupport
+  Others --> DBSupport
