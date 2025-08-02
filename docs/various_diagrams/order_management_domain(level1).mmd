@@ -1,0 +1,37 @@
+graph TD
+    subgraph Order Management Domain
+        OrderService[OrdersCore]
+        ProcessingService[OrderProcessing]
+        LineItemsService[OrderLineItems]
+        BillingService[Billing]
+    end
+
+    subgraph External Actors
+        Customer(Customer)
+        Carrier[External Transport Services]
+    end
+
+    subgraph Data Stores
+        OrdersDB[Orders Database]
+        InvoicesDB[Invoices Database]
+    end
+
+    subgraph Event Bus
+        MessageBroker(Apache Kafka / RabbitMQ)
+    end
+
+    %% Main Data Flows
+    Customer -- 1. Places Order --> OrderService
+    OrderService -- 2. Stores in --> OrdersDB
+    OrderService -- 3. Sends OrderCreated Event --> MessageBroker
+    MessageBroker -- 4. OrderCreated --> ProcessingService
+    ProcessingService -- 5. Requests Order Items --> LineItemsService
+    LineItemsService -- 6. Sends Item Details --> ProcessingService
+    ProcessingService -- 7. Sends StockReserved Event --> MessageBroker
+    ProcessingService -- 8. Sends OrderApproved Event --> MessageBroker
+    MessageBroker -- 9. OrderApproved --> BillingService
+    BillingService -- 10. Generates Invoice --> InvoicesDB
+    BillingService -- 11. Sends Invoice --> Customer
+
+    %% Shipping-related Flows
+    MessageBroker -- 12. OrderApproved --> P3_LogisticsProcessing(Logistics Process in DFD-0)
