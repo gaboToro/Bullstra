@@ -1,0 +1,33 @@
+graph TD
+
+  %% Frontend
+  subgraph Internet
+    User_Browser[User Browser]
+  end
+
+  %% Public Subnet
+  subgraph Public_Subnet
+    Application_Load_Balancer[Application Load Balancer]
+    Bastion_Host[Bastion Host]
+  end
+
+  %% Private Subnet
+  subgraph Private_Subnet
+    API_Gateway[API Gateway]
+    ECS_EKS_Cluster[Container Cluster]
+    Message_Broker[Message Broker]
+    PostgreSQL[PostgreSQL Database]
+    DynamoDB[NoSQL DynamoDB Database]
+    Metrics[Prometheus and Grafana]
+  end
+
+  %% Connections
+  User_Browser -->|HTTP/S| Application_Load_Balancer
+  Application_Load_Balancer --> API_Gateway
+  Application_Load_Balancer --> ECS_EKS_Cluster
+  Bastion_Host -->|SSH| ECS_EKS_Cluster
+  API_Gateway -->|REST/gRPC| ECS_EKS_Cluster
+  ECS_EKS_Cluster -->|Events| Message_Broker
+  ECS_EKS_Cluster -->|Read/Write| PostgreSQL
+  ECS_EKS_Cluster -->|Read/Write| DynamoDB
+  ECS_EKS_Cluster -->|Metrics| Metrics

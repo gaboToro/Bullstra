@@ -1,0 +1,35 @@
+graph TD
+    subgraph "Client"
+        A[Browser/Mobile App]
+    end
+
+    subgraph "AWS Cloud (Region)"
+        direction LR
+        subgraph "Availability Zone A"
+            direction TB
+            B((Application Load Balancer))
+            C[Auto Scaling Group]
+            D[(RDS Database)]
+            E[Prometheus / Grafana]
+        end
+
+        subgraph "Availability Zone B"
+            direction TB
+            F[Auto Scaling Group]
+            G[(RDS Database)]
+        end
+        B --> C
+        B --> F
+        C --> D
+        F --> G
+    end
+
+    A -- "HTTP/S Traffic" --> B
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#ccf,stroke:#333,stroke-width:2px
+    style F fill:#ccf,stroke:#333,stroke-width:2px
+    style D fill:#fcf,stroke:#333,stroke-width:2px
+    style G fill:#fcf,stroke:#333,stroke-width:2px
+    style E fill:#cec,stroke:#333,stroke-width:2px

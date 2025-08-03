@@ -1,0 +1,40 @@
+@startuml low-level
+skinparam handwritten true
+skinparam titleFontSize 20
+
+title Infrastructure Architecture - Low-Level (One AZ)
+
+cloud "Internet" {
+    agent "Client" as C
+}
+
+frame "AWS Cloud" {
+    rectangle "VPC (Virtual Private Cloud)" as VPC {
+        folder "Public Subnet" as PublicSubnet {
+            node "Application Load Balancer (ALB)" as ALB
+            component "Bastion Host" as Bastion
+        }
+
+        folder "Private Subnet" as PrivateSubnet {
+            component "API Gateway" as AGW
+            folder "ECS/EKS Cluster" as ECS {
+                collections "Microservices" as MS
+            }
+            queue "Message Broker (Kafka/RabbitMQ)" as MQ
+            database "Databases (RDS, DynamoDB, etc.)" as DB
+            component "Observability (Prometheus)" as OBS
+        }
+
+        PublicSubnet --> PrivateSubnet : Incoming Traffic
+        PrivateSubnet --> PublicSubnet : Outgoing Traffic
+    }
+}
+
+C --> ALB : HTTP/S Traffic
+ALB --> AGW
+AGW --> MS : REST/gRPC
+MS --> MQ : Asynchronous Events
+MS --> DB : Queries
+Bastion --> ECS : Management Access
+MS --> OBS : Metrics
+@enduml

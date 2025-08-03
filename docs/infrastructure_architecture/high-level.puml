@@ -1,0 +1,43 @@
+@startuml high-level
+skinparam handwritten true
+skinparam titleFontSize 20
+
+title Infrastructure Architecture - High-Level (Multi-AZ)
+
+cloud "Internet" {
+    agent "Client" as C
+}
+
+frame "AWS Cloud" {
+    rectangle "Region" {
+        node "Application Load Balancer (ALB)" as ALB
+        
+        rectangle "Availability Zone A" as AZ1 {
+            rectangle "Virtual Private Cloud (VPC)" as VPC1 {
+                folder "Auto Scaling Group" as ASG1 {
+                    component "Microservices (Docker)" as MS1
+                }
+                database "RDS/NoSQL Databases" as DB1
+                component "Prometheus / Grafana" as OBS1
+            }
+        }
+        
+        rectangle "Availability Zone B" as AZ2 {
+            rectangle "Virtual Private Cloud (VPC)" as VPC2 {
+                folder "Auto Scaling Group" as ASG2 {
+                    component "Microservices (Docker)" as MS2
+                }
+                database "RDS/NoSQL Databases" as DB2
+            }
+        }
+
+        ALB --> ASG1
+        ALB --> ASG2
+        ASG1 --> DB1
+        ASG2 --> DB2
+    }
+}
+
+C --> ALB : HTTP/S Traffic
+
+@enduml
