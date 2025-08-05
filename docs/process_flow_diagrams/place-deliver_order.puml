@@ -1,0 +1,48 @@
+@startuml Place and Deliver an Order
+title Flow Diagram: Place and Deliver an Order
+skinparam handwritten true
+
+|Customer|
+start
+:Browses and adds products to cart;
+:Makes payment;
+
+|System|
+:Validates payment;
+if (Payment successful?) then (No)
+  :Notifies payment failure;
+  stop
+else (Yes)
+  :Reserves stock and notifies Administration;
+endif
+
+|Administrator|
+:Processes and assigns the order;
+|Logistics Staff|
+:Prepares and marks order as "In Transit";
+
+|System|
+:Updates status and notifies Customer;
+note right: Customer can track the shipment
+
+|Logistics Staff|
+:Makes the delivery;
+if (Delivery successful?) then (No)
+  :Reports an issue;
+  |System|
+  :Notifies Administrator and Customer;
+  |Administrator|
+  :Reassigns delivery or handles return;
+  stop
+else (Yes)
+  :Confirms delivery;
+endif
+
+|System|
+:Marks order as "Delivered";
+:Generates and sends invoice;
+|Customer|
+:Receives the product and invoice;
+
+stop
+@enduml

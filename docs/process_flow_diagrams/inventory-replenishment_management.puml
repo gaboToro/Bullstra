@@ -1,0 +1,33 @@
+@startuml Inventory and Replenishment Management
+title Flow Diagram: Inventory and Replenishment Management
+skinparam handwritten true
+
+|System|
+start
+:Monitors stock levels;
+repeat
+  :Checks if product stock is low;
+  if (Stock < Minimum Threshold?) then (Yes)
+    :Generates alert;
+    :Notifies Administrator;
+  else (No)
+    :Continues monitoring;
+  endif
+repeat while (Monitoring active) is (No, continue)
+
+|Administrator|
+:Receives alert and reviews stock;
+if (Create Purchase Order?) then (No)
+  :Dismisses alert;
+else (Yes)
+  :Creates Purchase Order;
+  |System|
+  :Sends order to supplier;
+endif
+
+|Administrator|
+:Registers receipt of goods;
+|System|
+:Updates product stock;
+stop
+@enduml
