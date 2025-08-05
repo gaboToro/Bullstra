@@ -1,0 +1,21 @@
+@startuml Order State Diagram
+title State Diagram: Order
+scale 0.8
+
+state "Created" as created
+state "Processing" as processing
+state "Cancelled" as cancelled
+state "Assigned to Delivery" as assigned
+state "Delivered" as delivered
+state "Invoiced" as invoiced
+
+[*] --> created : Order_Created
+created --> processing : Validate_Order
+created --> cancelled : Cancel_Order
+processing --> cancelled : Cancel_Order
+processing --> assigned : Assign_Delivery
+assigned --> delivered : Successful_Delivery
+delivered --> invoiced : Generate_Invoice
+invoiced --> [*]
+
+@enduml
