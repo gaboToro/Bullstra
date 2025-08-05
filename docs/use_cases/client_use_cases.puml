@@ -1,0 +1,24 @@
+@startuml Client use cases
+left to right direction
+title Use Cases: Client
+
+actor "Client" as C
+
+package "Client Functionalities" {
+    usecase "Register in the system" as UC1
+    usecase "Log in" as UC2
+    usecase "View product catalog" as UC3
+    usecase "Place an order" as UC4
+    usecase "Check order status" as UC5
+    usecase "Track a shipment" as UC6
+    usecase "View invoices" as UC7
+
+    C -- UC1
+    C -- UC2
+    C -- UC3
+    C -- UC4
+    C -- UC5
+    C -- UC6
+    C -- UC7
+}
+@enduml

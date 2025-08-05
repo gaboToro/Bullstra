@@ -1,0 +1,46 @@
+@startuml Admin use cases
+left to right direction
+title Use Cases: Administrator
+
+actor "Administrator" as A
+
+package "Administrator Functionalities" {
+    usecase "Log in" as UC2_A
+    usecase "User management" as UC11
+    usecase "Vehicle monitoring" as UC12
+    usecase "Generate reports" as UC13
+    usecase "Product management" as UC14
+    usecase "Stock management" as UC15
+    usecase "Price management" as UC16
+    usecase "Location management" as UC17
+    usecase "Order processing" as UC18
+    usecase "Generate invoice" as UC19
+    usecase "Manage order lines" as UC20
+    usecase "Manage shipment lifecycle" as UC21
+    usecase "Route optimization" as UC22
+    usecase "Integrate with carriers" as UC23
+    usecase "Manage vehicles and staff" as UC24
+    usecase "Supplier management" as UC25
+    usecase "Create purchase order" as UC26
+    usecase "Register goods reception" as UC27
+
+    A -- UC2_A
+    A -- UC11
+    A -- UC12
+    A -- UC13
+    A -- UC14
+    A -- UC15
+    A -- UC16
+    A -- UC17
+    A -- UC18
+    A -- UC19
+    A -- UC20
+    A -- UC21
+    A -- UC22
+    A -- UC23
+    A -- UC24
+    A -- UC25
+    A -- UC26
+    A -- UC27
+}
+@enduml
