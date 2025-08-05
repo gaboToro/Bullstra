@@ -1,0 +1,19 @@
+@startuml Shipment State Diagram
+title State Diagram: Shipment
+scale 0.8
+
+state "Pending" as pending
+state "In Transit" as in_transit
+state "Delivered" as delivered
+state "Failed" as failed
+state "Returned" as returned
+
+[*] --> pending : Assign_Shipment
+pending --> in_transit : Assign_Vehicle
+in_transit --> delivered : Confirm_Delivery
+in_transit --> failed : Report_Failure
+failed --> returned : Start_Return
+returned --> pending : Reassign
+delivered --> [*]
+returned --> [*]
+@enduml

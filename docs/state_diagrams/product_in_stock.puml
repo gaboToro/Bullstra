@@ -1,0 +1,19 @@
+@startuml Product In Stock State Diagram
+title State Diagram: Product In Stock
+scale 0.8
+
+state "Available" as available
+state "Reserved" as reserved
+state "In Transit" as in_transit
+state "Out of Stock" as out_of_stock
+state "Returned" as returned
+
+[*] --> available : Goods_Received
+available --> reserved : Order_Placed
+available --> out_of_stock : Sale
+reserved --> in_transit : Shipment_Created
+in_transit --> returned : Return_Received
+returned --> available : Product_Restocked
+out_of_stock --> available : Replenish
+
+@enduml
