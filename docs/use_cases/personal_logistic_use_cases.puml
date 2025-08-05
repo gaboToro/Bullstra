@@ -1,0 +1,18 @@
+@startuml Logistics Staff use cases
+left to right direction
+title Use Cases: Logistics Staff
+
+actor "Logistics Staff" as PL
+
+package "Logistics Staff Functionalities" {
+    usecase "Log in" as UC2_PL
+    usecase "Check delivery route" as UC8
+    usecase "Update delivery status" as UC9
+    usecase "Scan products (warehouse)" as UC10
+
+    PL -- UC2_PL
+    PL -- UC8
+    PL -- UC9
+    PL -- UC10
+}
+@enduml
