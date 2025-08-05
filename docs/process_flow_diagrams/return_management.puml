@@ -1,0 +1,40 @@
+@startuml Return Management
+title Flow Diagram: Return Management
+skinparam handwritten true
+
+|Customer|
+start
+:Initiates return request;
+|System|
+:Registers request and notifies Administration;
+|Administrator|
+:Reviews request;
+if (Request approved?) then (Yes)
+  :Approves request;
+  |System|
+  :Generates and sends return shipping label;
+  |Customer|
+  :Packages and ships the product;
+else (No)
+  :Rejects request;
+  |System|
+  :Notifies Customer of rejection;
+  stop
+endif
+
+|Administrator|
+:Receives returned product;
+:Inspects product condition;
+if (Product in good condition?) then (Yes)
+  :Registers restocking;
+  |System|
+  :Updates product stock;
+  :Processes refund to Customer;
+else (No)
+  :Marks product as defective;
+endif
+
+|Customer|
+:Receives refund;
+stop
+@enduml
