@@ -1,0 +1,90 @@
+@startuml Data base diagram
+skinparam componentStyle rectangle
+title Database Diagram: Microservices Architecture
+
+package "Database Infrastructure" {
+    database "PostgreSQL (RDS)" as pgSQL
+    database "MySQL (RDS)" as mySQL
+    database "MongoDB" as mongoDB
+    database "DynamoDB" as dynamoDB
+    database "Redis (ElastiCache)" as redis
+    database "Elasticsearch" as es
+    database "Amazon Redshift" as redshift
+    database "InfluxDB" as influxDB
+    database "Neo4j" as neo4j
+}
+
+package "Inventory Domain" {
+    [Inventory_Core] as invCore
+    [Stock_Control] as cStock
+    [Product_Catalog] as catProd
+    [Pricing] as precios
+    [Warehouse_Locations] as ubiAlm
+}
+
+package "Orders Domain" {
+    [Orders_Core] as pedCore
+    [Order_Processing] as procPed
+    [Order_Lines] as linPed
+    [Billing] as fact
+}
+
+package "Shipping and Logistics Domain" {
+    [Shipping_Core] as envCore
+    [Route_Optimization] as rutas
+    [Vehicle_Tracking] as segVeh
+}
+
+package "Clients and Users Domain" {
+    [Users_Core] as userCore
+    [Authentication] as auth
+    [Profiles] as perfiles
+}
+
+package "Suppliers Domain" {
+    [Suppliers_Core] as provCore
+    [Purchase_Orders] as oc
+    [Goods_Receipt] as rm
+}
+
+package "Analytics and Reporting Domain" {
+    [Analytical_Data] as datos
+    [Reports] as reportes
+}
+
+' Relationships between microservices and their databases
+' Inventory Domain
+invCore --> pgSQL
+cStock --> redis
+catProd --> mongoDB
+catProd --> es
+precios --> pgSQL
+ubiAlm --> pgSQL
+
+' Orders Domain
+pedCore --> pgSQL
+procPed --> pgSQL
+linPed --> pgSQL
+fact --> pgSQL
+
+' Shipping and Logistics Domain
+envCore --> pgSQL
+envCore --> es
+rutas --> neo4j
+segVeh --> influxDB
+
+' Clients and Users Domain
+userCore --> pgSQL
+auth --> dynamoDB
+perfiles --> pgSQL
+
+' Suppliers Domain
+provCore --> mySQL
+oc --> mySQL
+rm --> mySQL
+
+' Analytics Domain
+datos --> redshift
+reportes --> redshift
+
+@enduml
